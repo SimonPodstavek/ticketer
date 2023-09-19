@@ -5,7 +5,7 @@ $INCLUDES_PATH =  '../';
 
 require_once($INCLUDES_PATH.'/session/session_handler.php');
 
-// Initiate session if the user doesn't have session yet
+// Initiate session if a user doesn't have session yet
 if(session_status() !== PHP_SESSION_ACTIVE){ 
     session_start();
     $_SESSION["REMOTE_ADDR"] = $_SERVER["REMOTE_ADDR"];
@@ -18,18 +18,24 @@ if ($_SESSION["REMOTE_ADDR"] != $_SERVER["REMOTE_ADDR"]){
 }
 
 
-// Prevent form sourcing XSS
+// Sanitize user input
 foreach($_POST as $field_key => $field){
     $_POST[$field_key] = htmlspecialchars($field);
 }
 
 if(isset($_POST["login"])){
-    verify_login($_POST["mail"], $_POST["password"]);
+    $user = User::getInstance();
+    $response = $user->verify_login($_POST["mail"], $_POST["password"]);
 
+    if($response == 200){
+        echo "aqwerty";
+    }elseif($response == 401){
+        echo "Unauthorized";
+    }elseif($response == 404){
+        echo "Not found";
+    }
+    
 }
 
-
-// $_SESSION["first_name"]
-// $_SESSION["last_name"]
 
 ?>
